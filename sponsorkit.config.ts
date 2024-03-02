@@ -20,13 +20,16 @@ export default defineConfig({
       monthlyDollars: 5,
       preset: presets.medium,
       composeAfter: (composer, tierSponsors, config) => {
-        composer.addSpan(10)
+        composer.addSpan(15)
       },
     },
     {
       title: 'Supporters',
       monthlyDollars: 8,
       preset: presets.large,
+      composeAfter: (composer, tierSponsors, config) => {
+        composer.addSpan(20)
+      },
     },
   ],
 })
