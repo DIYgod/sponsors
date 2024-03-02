@@ -28,7 +28,7 @@ export default defineConfig({
       monthlyDollars: 8,
       preset: presets.large,
       composeAfter: (composer, tierSponsors, config) => {
-        composer.addSpan(20)
+        composer.addSpan(40)
       },
     },
   ],
