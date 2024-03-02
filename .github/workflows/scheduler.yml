@@ -39,5 +39,7 @@ jobs:
         with:
           message: 'chore: update sponsors.svg'
           add: 'sponsors.*'
+          author_name: DIYgod-bot
+          author_email: bot@diygod.me
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
