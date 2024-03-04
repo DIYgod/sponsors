@@ -34,7 +34,7 @@ const past: BadgePreset = {
 export default defineConfig({
   formats: ['svg', 'json'],
   afdian: {
-    exechangeRate: 7.2,
+    exechangeRate: 740,
   },
   tiers: [
     {
@@ -47,7 +47,7 @@ export default defineConfig({
       preset: presets.base,
     },
     {
-      title: 'Appreciators',
+      title: 'Supporters',
       monthlyDollars: 5,
       preset: {
         ...presets.medium,
@@ -57,8 +57,18 @@ export default defineConfig({
       },
     },
     {
-      title: 'Supporters',
-      monthlyDollars: 8,
+      title: 'Patrons',
+      monthlyDollars: 10,
+      preset: {
+        ...presets.medium,
+        name: {
+          maxLength: 8,
+        },
+      },
+    },
+    {
+      title: 'Benefactors',
+      monthlyDollars: 100,
       preset: {
         ...presets.large,
         name: {
