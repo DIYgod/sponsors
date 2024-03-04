@@ -47,16 +47,6 @@ export default defineConfig({
       preset: presets.base,
     },
     {
-      title: 'Supporters',
-      monthlyDollars: 5,
-      preset: {
-        ...presets.medium,
-        name: {
-          maxLength: 8,
-        },
-      },
-    },
-    {
       title: 'Patrons',
       monthlyDollars: 10,
       preset: {
