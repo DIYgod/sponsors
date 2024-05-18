@@ -6,11 +6,11 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "packageManager": "pnpm@8.15.4",
+  "packageManager": "pnpm@9.1.1",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "sponsorkit": "0.9.1"
+    "sponsorkit": "0.14.4"
   }
 }
