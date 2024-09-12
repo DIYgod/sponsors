@@ -1,17 +1,21 @@
-import { defineConfig, presets, BadgePreset } from 'sponsorkit'
+import { defineConfig, tierPresets } from 'sponsorkit'
 
-const past: BadgePreset = {
-  avatar: {
-    size: 20,
+// @ts-expect-error process
+export default defineConfig(process.env.TYPE = 'simple' ? {
+  formats: ['svg', 'json'],
+  afdian: {
+    exechangeRate: 740,
   },
-  boxWidth: 22,
-  boxHeight: 22,
-  container: {
-    sidePadding: 35,
-  },
-}
-
-export default defineConfig({
+  tiers: [
+    {
+      preset: tierPresets.xs,
+    },
+    {
+      monthlyDollars: -1,
+      preset: tierPresets.xs,
+    },
+  ],
+} : {
   formats: ['svg', 'json'],
   afdian: {
     exechangeRate: 740,
@@ -20,17 +24,17 @@ export default defineConfig({
     {
       title: 'Past Sponsors',
       monthlyDollars: -1,
-      preset: presets.xs,
+      preset: tierPresets.xs,
     },
     {
       title: 'Donors',
-      preset: presets.base,
+      preset: tierPresets.base,
     },
     {
       title: 'Patrons',
       monthlyDollars: 10,
       preset: {
-        ...presets.medium,
+        ...tierPresets.medium,
         name: {
           maxLength: 8,
         },
@@ -40,7 +44,7 @@ export default defineConfig({
       title: 'Benefactors',
       monthlyDollars: 100,
       preset: {
-        ...presets.large,
+        ...tierPresets.large,
         name: {
           maxLength: 8,
         },
