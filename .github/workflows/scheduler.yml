@@ -24,8 +24,20 @@ jobs:
         run: pnpm i --frozen-lockfile
 
       - name: Update sponsors
-        run: pnpm exec sponsorkit -w 800 --dir . && pnpm exec sponsorkit -w 1000 --name sponsors.wide --dir . && set SPONSORKIT_TYPE=simple && pnpm exec sponsorkit -w 1000 --name sponsors.simple --dir .
+        run: pnpm exec sponsorkit -w 800 --dir . && pnpm exec sponsorkit -w 1000 --name sponsors.wide --dir .
         env:
+          SPONSORKIT_GITHUB_LOGIN: DIYgod
+          SPONSORKIT_GITHUB_TOKEN: ${{ secrets.SPONSORKIT_GITHUB_TOKEN }}
+          SPONSORKIT_AFDIAN_USER_ID: ${{ secrets.SPONSORKIT_AFDIAN_USER_ID }}
+          SPONSORKIT_AFDIAN_TOKEN: ${{ secrets.SPONSORKIT_AFDIAN_TOKEN }}
+          SPONSORKIT_PATREON_TOKEN: ${{ secrets.SPONSORKIT_PATREON_TOKEN }}
+          SPONSORKIT_OPENCOLLECTIVE_KEY: ${{ secrets.SPONSORKIT_OPENCOLLECTIVE_KEY }}
+          SPONSORKIT_OPENCOLLECTIVE_SLUG: ${{ secrets.SPONSORKIT_OPENCOLLECTIVE_SLUG }}
+
+      - name: Update sponsors - simple
+        run:  pnpm exec sponsorkit -w 1000 --name sponsors.simple --dir .
+        env:
+          SPONSORKIT_TYPE: simple
           SPONSORKIT_GITHUB_LOGIN: DIYgod
           SPONSORKIT_GITHUB_TOKEN: ${{ secrets.SPONSORKIT_GITHUB_TOKEN }}
           SPONSORKIT_AFDIAN_USER_ID: ${{ secrets.SPONSORKIT_AFDIAN_USER_ID }}
