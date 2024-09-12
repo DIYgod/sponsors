@@ -1,7 +1,7 @@
 import { defineConfig, tierPresets } from 'sponsorkit'
 
-// @ts-expect-error process
-export default defineConfig(process.env.TYPE = 'simple' ? {
+// @ts-ignore
+export default defineConfig(process.env.SPONSORKIT_TYPE === 'simple' ? {
   formats: ['svg', 'json'],
   afdian: {
     exechangeRate: 740,
