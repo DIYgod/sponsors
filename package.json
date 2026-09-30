@@ -2,6 +2,9 @@
   "private": true,
   "type": "module",
   "packageManager": "pnpm@11.10.0",
+  "scripts": {
+    "test": "node --test test/*.test.mjs"
+  },
   "dependencies": {
     "sponsorkit": "17.1.1"
   }

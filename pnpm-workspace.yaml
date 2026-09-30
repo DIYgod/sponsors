@@ -1,2 +1,4 @@
 allowBuilds:
   sharp: true
+patchedDependencies:
+  sponsorkit@17.1.1: patches/sponsorkit@17.1.1.patch

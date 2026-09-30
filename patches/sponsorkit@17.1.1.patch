@@ -1,0 +1,105 @@
+diff --git a/dist/cli.mjs b/dist/cli.mjs
+index 729a4fade83fe55ab84dfd8954b2c9a67091cc50..ca12d7ccca0073f1dc709927207f0677c0b9c184 100644
+--- a/dist/cli.mjs
++++ b/dist/cli.mjs
+@@ -280,7 +280,7 @@ ${c.magenta.bold`SponsorKit`} ${c.dim`v${version}`}
+     t.success(`Loaded from cache ${r(cacheFile)}`);
+   }
+   allSponsors.sort(
+-    (a, b) => b.monthlyDollars - a.monthlyDollars || Date.parse(b.createdAt) - Date.parse(a.createdAt) || (b.sponsor.login || b.sponsor.name).localeCompare(a.sponsor.login || a.sponsor.name)
++    (a, b) => b.monthlyDollars - a.monthlyDollars || Date.parse(b.createdAt) - Date.parse(a.createdAt) || (b.sponsor.login || b.sponsor.name || "").localeCompare(a.sponsor.login || a.sponsor.name || "")
+     // ASC name
+   );
+   allSponsors = await config.onSponsorsReady?.(allSponsors) || allSponsors;
+diff --git a/dist/shared/sponsorkit.CIuglHuW.mjs b/dist/shared/sponsorkit.CIuglHuW.mjs
+index 5c55524590a27c7ec9727a14ba82731a772219f4..a2bce133c9d9669225c6be8ae9c47b233deb3ddc 100644
+--- a/dist/shared/sponsorkit.CIuglHuW.mjs
++++ b/dist/shared/sponsorkit.CIuglHuW.mjs
+@@ -342,7 +342,7 @@ function genSvgImage(x, y, size, radius, base64Image, imageFormat) {
+ }
+ async function generateBadge(x, y, sponsor, preset, radius, imageFormat) {
+   const { login } = sponsor;
+-  let name = (sponsor.name || sponsor.login).trim();
++  let name = sponsor.name?.trim() || sponsor.login?.trim() || "Anonymous";
+   const url = sponsor.websiteUrl || sponsor.linkUrl;
+   if (preset.name && preset.name.maxLength && name.length > preset.name.maxLength) {
+     if (name.includes(" "))
+@@ -1760,51 +1760,59 @@ const PatreonProvider = {
+ async function fetchPatreonSponsors(token) {
+   if (!token)
+     throw new Error("Patreon token is required");
++  const headers = {
++    "Authorization": `bearer ${token}`,
++    "Content-Type": "application/json",
++    "User-Agent": `SponsorKit/${version} (https://github.com/antfu-collective/sponsorkit)`
++  };
+   const userData = await $fetch(
+-    "https://www.patreon.com/api/oauth2/api/current_user/campaigns?include=null",
++    "https://www.patreon.com/api/oauth2/v2/campaigns",
+     {
+       method: "GET",
+-      headers: {
+-        "Authorization": `bearer ${token}`,
+-        "Content-Type": "application/json"
+-      },
++      headers,
+       responseType: "json"
+     }
+   );
+-  const userCampaignId = userData.data[0].id;
++  const userCampaignId = userData.data[0]?.id;
++  if (!userCampaignId)
++    throw new Error("No Patreon campaign found for the authenticated user");
+   const sponsors = [];
+-  let sponsorshipApi = `https://www.patreon.com/api/oauth2/v2/campaigns/${userCampaignId}/members?include=user,currently_entitled_tiers&fields%5Bmember%5D=currently_entitled_amount_cents,patron_status,pledge_relationship_start,lifetime_support_cents&fields%5Buser%5D=image_url,url,first_name,full_name&fields%5Btier%5D=amount_cents&page%5Bcount%5D=100`;
++  const membersApi = `https://www.patreon.com/api/oauth2/v2/campaigns/${userCampaignId}/members?include=user,currently_entitled_tiers&fields%5Bmember%5D=currently_entitled_amount_cents,patron_status,pledge_relationship_start,lifetime_support_cents&fields%5Buser%5D=image_url,url,first_name,full_name&fields%5Btier%5D=amount_cents&page%5Bcount%5D=100`;
++  let sponsorshipApi = membersApi;
+   do {
+     const sponsorshipData = await $fetch(sponsorshipApi, {
+       method: "GET",
+-      headers: {
+-        "Authorization": `bearer ${token}`,
+-        "Content-Type": "application/json"
+-      },
++      headers,
+       responseType: "json"
+     });
+     sponsors.push(
+       ...sponsorshipData.data.filter((membership) => membership.attributes.patron_status !== null).map((membership) => ({
+         membership,
+-        patron: sponsorshipData.included.find(
+-          (v) => v.type === "user" && v.id === membership.relationships.user.data.id
++        patron: sponsorshipData.included?.find(
++          (v) => v.type === "user" && v.id === membership.relationships.user?.data?.id
+         ),
+-        tier: sponsorshipData.included.find(
+-          (v) => v.type === "tier" && v.id === membership.relationships.currently_entitled_tiers.data[0]?.id
++        tier: sponsorshipData.included?.find(
++          (v) => v.type === "tier" && v.id === membership.relationships.currently_entitled_tiers?.data[0]?.id
+         )
+       }))
+     );
+     sponsorshipApi = sponsorshipData.links?.next;
++    const nextCursor = sponsorshipData.meta?.pagination?.cursors?.next;
++    if (!sponsorshipApi && nextCursor) {
++      const nextPage = new URL(membersApi);
++      nextPage.searchParams.set("page[cursor]", nextCursor);
++      sponsorshipApi = nextPage.href;
++    }
+   } while (sponsorshipApi);
+   const processed = sponsors.map((raw) => {
+     const sponsor = {
+       sponsor: {
+-        avatarUrl: raw.patron.attributes.image_url,
+-        login: raw.patron.attributes.first_name,
+-        name: raw.patron.attributes.full_name,
++        avatarUrl: raw.patron?.attributes?.image_url || "",
++        login: raw.patron?.attributes?.first_name || "",
++        name: raw.patron?.attributes?.full_name || "",
+         type: "User",
+         // Patreon only support user
+-        linkUrl: raw.patron.attributes.url
++        linkUrl: raw.patron?.attributes?.url || void 0
+       },
+       isOneTime: false,
+       // One-time pledges not supported
